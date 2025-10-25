@@ -1,9 +1,9 @@
-FROM debian:stable-slim
+FROM alpine:latest
 
 WORKDIR /app
 
-RUN apt update && apt install fortune-mod cowsay netcat-openbsd -y
-ENV PATH="$PATH:/usr/games"
+RUN apk add cowsay --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+    apk add fortune bash netcat-openbsd
 
 COPY wisecow.sh /app/
 RUN chmod +x /app/wisecow.sh

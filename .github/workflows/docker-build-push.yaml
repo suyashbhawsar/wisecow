@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*.*.*'  # Trigger on semantic version tags (e.g., v1.0.0)
   pull_request:
     branches:
       - main
@@ -39,12 +41,23 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            # Semantic versioning tags (e.g., v1.0.0, v1.0, v1)
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            # Short SHA tag (e.g., sha-abc1234) - PRIMARY TAG
+            type=sha,prefix=sha-,format=short
+            # Branch-based SHA tag (e.g., main-sha-abc1234def5678)
+            type=sha,prefix={{branch}}-sha-,format=long
+            # Branch name (e.g., main)
             type=ref,event=branch
+            # PR reference (e.g., pr-123)
             type=ref,event=pr
-            type=sha,prefix={{branch}}-
+            # Latest tag (only on main branch)
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
+        id: build-and-push
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -54,5 +67,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Image digest
-        run: echo "Image pushed with digest ${{ steps.build-and-push.outputs.digest }}"
+      - name: Image digest and tags
+        run: |
+          echo "Image pushed with digest: ${{ steps.build-and-push.outputs.digest }}"
+          echo ""
+          echo "Image tags created:"
+          echo "${{ steps.meta.outputs.tags }}"
+          echo ""
+          echo "Primary image tag for deployment:"
+          echo "${{ fromJSON(steps.meta.outputs.json).tags[0] }}"

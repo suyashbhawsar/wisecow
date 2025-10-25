@@ -45,10 +45,8 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            # Short SHA tag (e.g., sha-abc1234) - PRIMARY TAG
+            # Short SHA tag (e.g., sha-abc1234)
             type=sha,prefix=sha-,format=short
-            # Branch-based SHA tag (e.g., main-sha-abc1234def5678)
-            type=sha,prefix={{branch}}-sha-,format=long
             # Branch name (e.g., main)
             type=ref,event=branch
             # PR reference (e.g., pr-123)

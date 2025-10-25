@@ -26,3 +26,31 @@ Deploy the wisecow application as a k8s app
 1. Github repo containing the app with corresponding dockerfile, k8s manifest, any other artifacts needed.
 2. Github repo with corresponding github action.
 3. Github repo should be kept private and the access should be enabled for following github IDs: nyrahul
+
+## Docker Image Versioning
+
+### Available Tags
+Every commit creates:
+- `sha-abc1234` (Recommended for K8s deployments)
+- `latest` (Only for local testing, never use in production)
+
+### Creating Versioned Releases
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+Creates tags: `1.0.0`, `1.0`, `1`, `sha-abc1234`, `latest`
+
+### Deployment Examples
+```bash
+# Use SHA tag (recommended)
+kubectl set image deployment/wisecow wisecow=ghcr.io/suyashbhawsar/wisecow:sha-abc1234
+
+# Use semantic version
+kubectl set image deployment/wisecow wisecow=ghcr.io/suyashbhawsar/wisecow:1.0.0
+```
+
+### Get Current SHA
+```bash
+git rev-parse --short HEAD
+```

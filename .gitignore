@@ -1,0 +1,13 @@
+# Generated Kubernetes secrets
+k8s/ghcr-secret-generated.yaml
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

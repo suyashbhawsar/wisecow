@@ -62,6 +62,27 @@ Point `wisecow.suyashbhawsar.com` to your cluster's external IP:
 kubectl get svc -n ingress-nginx
 ```
 
+## Resource Configuration
+
+The current resource values in `deployment.yaml` are based on VPA (Vertical Pod Autoscaler) analysis under sustained load:
+
+```yaml
+resources:
+  requests:
+    memory: "250Mi"  # VPA-recommended based on actual usage
+    cpu: "50m"       # VPA target (observed ~25m under load)
+  limits:
+    memory: "320Mi"  # 28% headroom for burst traffic
+    cpu: "200m"      # Allows CPU bursts for concurrent requests
+```
+
+**Why these values:**
+- Initial configuration (64Mi/128Mi memory) caused OOM kills (Exit Code 137)
+- VPA analysis with 600+ test requests showed consistent 250Mi memory usage
+- Bash script spawns multiple processes (nc, fortune, cowsay) per request requiring adequate memory
+- CPU usage remains low (~25m) but set to 50m request for scheduling priority
+- Limits provide headroom for burst traffic without resource waste
+
 ## Testing
 
 ### Without TLS (using LoadBalancer)

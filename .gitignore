@@ -11,3 +11,4 @@ k8s/ghcr-secret-generated.yaml
 # OS files
 .DS_Store
 Thumbs.db
+logs/

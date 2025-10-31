@@ -66,7 +66,7 @@ jobs:
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.image-tag.outputs.tag }}"
           echo "Deploying image: $IMAGE"
-          kubectl set image deployment/wisecow wisecow=$IMAGE --record || \
+          kubectl set image deployment/wisecow wisecow=$IMAGE || \
           kubectl apply -f k8s/deployment.yaml
 
       - name: Apply service

@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'k8s/**'
+      - '.github/workflows/deploy-gke.yaml'
+      - '!k8s/README.md'
+      - '!README.md'
+      - '!**/*.md'
+      - '!TASKS.md'
+      - '!scripts/**'
   workflow_dispatch:
     inputs:
       image_tag:

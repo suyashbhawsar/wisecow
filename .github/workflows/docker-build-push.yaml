@@ -6,9 +6,27 @@ on:
       - main
     tags:
       - 'v*.*.*'  # Trigger on semantic version tags (e.g., v1.0.0)
+    paths:
+      - 'Dockerfile'
+      - 'wisecow.sh'
+      - '.github/workflows/docker-build-push.yaml'
+      - '!README.md'
+      - '!**/*.md'
+      - '!TASKS.md'
+      - '!k8s/**'
+      - '!scripts/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'Dockerfile'
+      - 'wisecow.sh'
+      - '.github/workflows/docker-build-push.yaml'
+      - '!README.md'
+      - '!**/*.md'
+      - '!TASKS.md'
+      - '!k8s/**'
+      - '!scripts/**'
 
 env:
   REGISTRY: ghcr.io

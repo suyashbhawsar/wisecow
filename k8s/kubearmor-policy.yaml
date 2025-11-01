@@ -1,0 +1,101 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: wisecow-zero-trust-policy
+  namespace: default
+spec:
+  severity: 5
+  tags: ["zero-trust", "wisecow"]
+  message: "Wisecow zero-trust security policy violation detected"
+
+  selector:
+    matchLabels:
+      app: wisecow
+
+  process:
+    matchPaths:
+    # Allow only necessary executables
+    - path: /app/wisecow.sh
+    - path: /usr/bin/fortune
+    - path: /usr/bin/cowsay
+    - path: /bin/nc
+    - path: /usr/bin/nc
+    - path: /bin/bash
+    - path: /bin/sh
+    - path: /bin/cat
+    - path: /bin/rm
+    - path: /bin/mkfifo
+    - path: /bin/sleep
+    - path: /usr/bin/awk
+    - path: /usr/bin/sed
+    - path: /bin/echo
+    - path: /usr/bin/echo
+
+  file:
+    matchPaths:
+    # Allow read access to application files
+    - path: /app/wisecow.sh
+      readOnly: true
+    # Block access to sensitive files
+    - path: /etc/passwd
+      readOnly: true
+    - path: /etc/shadow
+    matchDirectories:
+    # Allow read access to necessary directories
+    - dir: /usr/bin/
+      readOnly: true
+      recursive: false
+    - dir: /usr/share/games/fortunes/
+      readOnly: true
+      recursive: true
+    - dir: /app/
+      readOnly: false
+      recursive: true
+    # Block access to sensitive directories
+    - dir: /root/
+      recursive: true
+    - dir: /etc/
+      recursive: true
+    - dir: /var/run/
+      recursive: true
+    - dir: /sys/
+      recursive: true
+    - dir: /proc/
+      recursive: true
+
+  capabilities:
+    matchCapabilities:
+    # Block dangerous capabilities
+    - capability: sys_admin
+    - capability: sys_ptrace
+    - capability: sys_module
+    - capability: dac_override
+    - capability: chown
+
+  action: Block
+---
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: wisecow-process-whitelist
+  namespace: default
+spec:
+  severity: 7
+  tags: ["zero-trust", "process-whitelist"]
+  message: "Unauthorized process execution attempt in Wisecow container"
+
+  selector:
+    matchLabels:
+      app: wisecow
+
+  process:
+    matchDirectories:
+    # Block execution from /tmp and other writable directories
+    - dir: /tmp/
+      recursive: true
+    - dir: /var/tmp/
+      recursive: true
+    - dir: /dev/shm/
+      recursive: true
+
+  action: Block
